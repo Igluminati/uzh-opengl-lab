@@ -35,7 +35,6 @@ The coding part in this exercise is small because we want you to spend the time 
 
 ...how you change the background color in an OpenGL app.
 
-
 ### Additional Information: 
 
 What you need to get it running:
@@ -63,3 +62,40 @@ To get the program running you can run the setup.sh (Mac & Linux) or the setup.b
 - [OpenGL - Getting started - FAQ](https://www.khronos.org/opengl/wiki/Getting_Started)
 - [OpenGL-tutorial.org](http://www.opengl-tutorial.org)
 - [Learn OpenGL tutorials [learnopengl.com]](https://learnopengl.com)
+
+### What I've Learnt
+
+GLFW is a library that handles the windowing functions - how to create a window, reading keyboard/mouse input, managing the OpenGL context. It gives you a canvas to draw on and tells the program when the user presses keys or moves the mouse.
+
+GLEW is a library that loads OpenGL functions. It quires the graphics driver at runtime and gives the program access to them. Without the graphics driver, you can't call most OpenGL functions beyond the ancient ones.
+
+The shader source code exists in separate plain-text files with GLSL code:
+- ``src/Cube.vert`` - the vertex shader
+- ``src/Cuve.frag`` - the fragment shader
+
+GLSL is the OpenGL Shading Language, which looks like C. Each file starts with ``#version 410 core`` declaring the GLSL version.
+
+The shader source code is loaded as such (in GLExample.cpp):
+1. Read the files from disc into strings (lines 17-18)
+2. Create shader objects on the GPU (lines 22-23)
+3. Upload source and compile (lines 25-26, implemented at lines 54-72). ``glShaderSource`` sends the string to the GPU, ``glCompileShader`` compiles it
+4. Link into a program (lines 29-36). A shader program bundles the vertex and fragment shaders together so the gpu can run them as a pipeline
+5. Delete the individual shader objects (lines 44-45). Once linked into the program, the standalone objects are no longer needed
+6. At render time, ``glUseProgram(program)`` (line 99) activates the shader program before drawing
+
+The information of the cube is defined in ``src/Model.cpp``, inside the namespace ``CubeData`` (lines 14-124). There exists four hardcoded arrays which define the cube:
+- Vertices (lines 16-47) - there are 24 vertex positions (x,y,z). There are 24 rather than 8 because each face needs it own copy of the corner vertices (so each face can have its own normal and colour)
+- Colours (lines 49-80) - one RPG colour per vertex. Each group of 4 vertices (one face) share the same colour: yellow, red, green, blue, cyan, magenta.
+- Normals (lines 82-113) - one normal vector per vertex. Each face's 4 vertices share the same outward-pointing normal (e.g left face =``(-1,0,0)``, right face =``(1,0,0)``)
+- Triangles (lines 115-123) - 36 indices defining 12 triangles (2 per face). Each line of 6 indices forms a quad from two triangles, e.g. ``0, 1, 2, 2, 3, 0``
+Then `createVertexArray` (lines 137-188) uploads all of this to the GPU via buffer objects and wired them into a VAO. ``draw()`` (lines 190-197) binds that VAO and issues ``glDrawElements`` to render the 36 indices as triangles.
+
+The drawing of the cube in the render loop occurs in ``GLExample.cpp``. The ``render()`` method is the draw call per frame (``bool GLExample::render() {...}``). Line 105 - ``cube->draw()`` is the actual draw call. That dispatches to ``Cube::draw()`` in Model.cpp (``void Cube::draw() {...}``)
+
+You change the background colour in an OpenGL app by modifying ``glClearColor`` which sets the background colour. In lines 95-96 of GLExample.cpp  there are four arguments (read,green,blue,alpha), where each is a float from ``0.0`` to ``1.0``. Initially, it is ``(0,0,0,1)`` - black. ``glClear`` then fills the framebuffer with that colour.
+
+```
+glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+```
+
