@@ -92,7 +92,8 @@ namespace cgCourse
 		glDisable(GL_CULL_FACE);
 
 		// Clear the color and depth buffers
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		// Modifies the blackground colour with own Legi number (25-700-360)
+		glClearColor(0.25f, 0.700f, 0.360f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Load program
