@@ -38,12 +38,24 @@ namespace cgCourse
         // Retrieve uniform location for the MVP matrix
         mvpUniformLocation = glGetUniformLocation(program, "mvpMatrix");
 
-        // **TODO**: Create your torus object with some warp
-        // For example: R=5.0f, r=1.0f, numSegments=32, numTubeSegments=16, offset=0.5, twistFactor=0.2)
+        // Screenshot (i): Filled, no offset, no twist
+        // torus = std::make_shared<Torus>(5.0f, 1.0f, 32, 16, 0.0f, 0.0f);
 
+        // Screenshot (ii): Wireframe, no offset, no twist
+        // torus = std::make_shared<Torus>(5.0f, 1.0f, 32, 16, 0.0f, 0.0f);
+
+        // Screenshot (iii): Wireframe + offset
+        // torus = std::make_shared<Torus>(5.0f, 1.0f, 32, 16, 0.5f, 0.0f);
+
+        // Screenshot (iv): Wireframe + offset + twist
+        // torus = std::make_shared<Torus>(5.0f, 1.0f, 32, 16, 0.5f, 0.2f);
+
+        // Screenshot (v): Wireframe + offset + twist + face culling (bonus)
+        torus = std::make_shared<Torus>(5.0f, 1.0f, 32, 16, 0.5f, 0.2f);
 
         // (Optional) position the torus
         // torus->setShapePosition(glm::vec3(0.0f, 0.0f, 0.0f));
+	torus->createVertexArray(0,1,2);
 
         return true;
     }
@@ -56,11 +68,23 @@ namespace cgCourse
         glClearColor(0.6f, 0.6f, 0.6f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // **TODO**: Optionally enable face culling
- 
+        // Screenshot (i): filled mode, no culling
+        // wireframeMode = false; glDisable(GL_CULL_FACE);
 
-        // **TODO**: Switch between wireframe & fill
+        // Screenshot (ii)-(iv): wireframe mode, no culling
+        // wireframeMode = true; glDisable(GL_CULL_FACE);
 
+        // Screenshot (v): wireframe mode + face culling (bonus)
+        wireframeMode = true;
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+        glFrontFace(GL_CCW);
+
+        if (wireframeMode) {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        } else {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        }
 
         // Use our shader program
         glUseProgram(program);
@@ -72,7 +96,7 @@ namespace cgCourse
 
 
         // **TODO**: Draw the torus
-
+	torus->draw();
         return true;
     }
 
