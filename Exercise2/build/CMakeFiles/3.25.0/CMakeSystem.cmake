@@ -1,0 +1,15 @@
+set(CMAKE_HOST_SYSTEM "Linux-6.18.16-1-MANJARO")
+set(CMAKE_HOST_SYSTEM_NAME "Linux")
+set(CMAKE_HOST_SYSTEM_VERSION "6.18.16-1-MANJARO")
+set(CMAKE_HOST_SYSTEM_PROCESSOR "x86_64")
+
+include("/home/steak/Desktop/UZH/Spring 2026/uzh-opengl-lab/vcpkg/scripts/buildsystems/vcpkg.cmake")
+
+set(CMAKE_SYSTEM "Linux-6.18.16-1-MANJARO")
+set(CMAKE_SYSTEM_NAME "Linux")
+set(CMAKE_SYSTEM_VERSION "6.18.16-1-MANJARO")
+set(CMAKE_SYSTEM_PROCESSOR "x86_64")
+
+set(CMAKE_CROSSCOMPILING "FALSE")
+
+set(CMAKE_SYSTEM_LOADED 1)

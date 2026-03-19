@@ -1,0 +1,6 @@
+/home/steak/Desktop/UZH/Spring 2026/uzh-opengl-lab/Exercise2/build/CMakeFiles/exercise.dir
+/home/steak/Desktop/UZH/Spring 2026/uzh-opengl-lab/Exercise2/build/CMakeFiles/edit_cache.dir
+/home/steak/Desktop/UZH/Spring 2026/uzh-opengl-lab/Exercise2/build/CMakeFiles/rebuild_cache.dir
+/home/steak/Desktop/UZH/Spring 2026/uzh-opengl-lab/Exercise2/build/imgui/CMakeFiles/imgui.dir
+/home/steak/Desktop/UZH/Spring 2026/uzh-opengl-lab/Exercise2/build/imgui/CMakeFiles/edit_cache.dir
+/home/steak/Desktop/UZH/Spring 2026/uzh-opengl-lab/Exercise2/build/imgui/CMakeFiles/rebuild_cache.dir
