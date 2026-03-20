@@ -43,6 +43,10 @@ namespace cgCourse
 		UnitCube unitCube;
 
 		std::vector<glm::mat4> torusModelMats;
+		std::vector<Torus> toruses;
+		std::vector<glm::vec3> torusInitialPositions;
+
+		int numberOfTorus = 12;
 
 		glm::mat4 mvpMatrix = glm::mat4(1);
 		glm::mat3 normalMatrix = glm::mat3(1);
