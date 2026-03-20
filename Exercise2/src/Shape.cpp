@@ -74,21 +74,29 @@ namespace cgCourse
 		glBindVertexArray(0);
 	}
 
-	// TODO: complete the following methods
 	void Shape::setPosition(const glm::vec3 & pos)
 	{
+		// constructs and assigns an 4x4 identity matrix with (tx, ty, tz, 1) in the 4th column
+		translationMatrix = glm::translate(glm::mat4(1.0f), pos);
+		objectPosition = pos;
 	}
 
 	void Shape::setRotation(float angle, const glm::vec3 & rot)
 	{
+		// rotate function handles any arbitrary axis (e.g., (0,1,0)) internally so no conditionals are needed depending on the axis vector `rot`
+		rotationMatrix = glm::rotate(glm::mat4(1.0f), angle, rot);
 	}
 
 	void Shape::setScaling(const glm::vec3 & scale)
 	{
+		scalingMatrix = glm::scale(glm::mat4(1.0f), scale);
 	}
 
 	void Shape::calculateModelMatrix()
 	{
+		// standard order: scale applied first, then rotate, then translate
+		// if any matrix is not passed, it's treated as an identity matrix
+		modelMatrix = translationMatrix * rotationMatrix * scalingMatrix;
 	}
 
 	void Shape::initIndexBuffer()
