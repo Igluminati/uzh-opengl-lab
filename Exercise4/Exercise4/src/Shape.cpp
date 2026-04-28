@@ -11,6 +11,8 @@ namespace cgCourse
 		glDeleteBuffers(1, &posBufferID);
 		glDeleteBuffers(1, &colorBufferID);
 		glDeleteBuffers(1, &normalBufferID);
+		glDeleteBuffers(1, &texCoordsBufferID);
+		glDeleteBuffers(1, &tangentBufferID);
 		glDeleteBuffers(1, &indexBufferID);
 		glDeleteVertexArrays(1, &vaoID);
 	}
