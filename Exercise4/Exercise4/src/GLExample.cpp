@@ -71,7 +71,22 @@ namespace cgCourse
 		 */
 		cubetex = std::make_shared<Texture>();
 		cubetex->loadFromFile(std::string(RES_DIR) + "/container.png");
-        // ...
+		cubetexSpec = std::make_shared<Texture>();
+		cubetexSpec->loadFromFile(std::string(RES_DIR) + "/container_specular.png");
+		cubetexNormal = std::make_shared<Texture>();
+		cubetexNormal->loadFromFile(std::string(RES_DIR) + "/container_normal.jpg");
+
+		torustex = std::make_shared<Texture>();
+		torustex->loadFromFile(std::string(RES_DIR) + "/brickwall.jpg");
+		torustexSpec = std::make_shared<Texture>();
+		torustexSpec->loadFromFile(std::string(RES_DIR) + "/brickwall_specular.jpg");
+		torustexNormal = std::make_shared<Texture>();
+		torustexNormal->loadFromFile(std::string(RES_DIR) + "/brickwall_normal.jpg");
+
+		bonustex = std::make_shared<Texture>();
+		bonustexSpec = std::make_shared<Texture>();
+		bonustexNormal = std::make_shared<Texture>();
+		recreateBonusTextures();
 
         // TODO END
 		return true;
@@ -129,7 +144,8 @@ namespace cgCourse
             renderTexturedTorus();
         } else {
             // TODO: Bonus Task
-
+            renderBonusCube();
+            renderBonusTorus();
             // END TODO
         }
 		return true;
@@ -186,6 +202,16 @@ namespace cgCourse
 		 *       used with glActiveTexture.
 		 */
 
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, cubetex->getTexHandle());
+		glUniform1i(programForTexturedShape->getUniformLocation("diffuseTex"), 0);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, cubetexSpec->getTexHandle());
+		glUniform1i(programForTexturedShape->getUniformLocation("specularTex"), 1);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, cubetexNormal->getTexHandle());
+		glUniform1i(programForTexturedShape->getUniformLocation("normalTex"), 2);
+
         // End TODO
 
         mvpMatrix = cam.getViewProjectionMatrix() * cube->getModelMatrix();
@@ -196,6 +222,13 @@ namespace cgCourse
         /* TODO: unbind textures by setting all glBindTextures for all active texture layers
 		 *       to zero.
 		 */
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, 0);
 
         // TODO END
 
@@ -214,6 +247,16 @@ namespace cgCourse
 		 *       used with glActiveTexture.
 		 */
 
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, torustex->getTexHandle());
+		glUniform1i(programForTexturedShape->getUniformLocation("diffuseTex"), 0);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, torustexSpec->getTexHandle());
+		glUniform1i(programForTexturedShape->getUniformLocation("specularTex"), 1);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, torustexNormal->getTexHandle());
+		glUniform1i(programForTexturedShape->getUniformLocation("normalTex"), 2);
+
         // TODO END
 
 		mvpMatrix = cam.getViewProjectionMatrix() * torus->getModelMatrix();
@@ -225,29 +268,102 @@ namespace cgCourse
 		*       to zero.
 		*/
 
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
         // End TODO
 
 		programForTexturedShape->unbind();
 
 
 		if(drawTorusNormals) {
-            programForTexturedNormals->bind();
-            /* TODO: Activate and bind the normal texture*/
-
-            // TODO END
-
-            mvpMatrix = cam.getViewProjectionMatrix() * torus->getModelMatrix();
-            glUniformMatrix4fv(programForTexturedNormals->getUniformLocation("mvpMatrix"), 1, GL_FALSE, &mvpMatrix[0][0]);
-            normalsTorus->draw();
-
-            /* TODO: unbind normal texture by setting glBindTexture for the active texture layer
-            *       to zero.
-            */
-
-            // TODO END
-
-            programForTexturedNormals->unbind();
+			drawTorusNormalLines(torustexNormal);
         }
+	}
+
+	void GLExample::drawTorusNormalLines(const std::shared_ptr<Texture> & normalTex)
+	{
+		programForTexturedNormals->bind();
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, normalTex->getTexHandle());
+		glUniform1i(programForTexturedNormals->getUniformLocation("normalTex"), 0);
+
+		mvpMatrix = cam.getViewProjectionMatrix() * torus->getModelMatrix();
+		glUniformMatrix4fv(programForTexturedNormals->getUniformLocation("mvpMatrix"), 1, GL_FALSE, &mvpMatrix[0][0]);
+		normalsTorus->draw();
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		programForTexturedNormals->unbind();
+	}
+
+	void GLExample::recreateBonusTextures()
+	{
+		bonustex->createBonus(bonusCheckerSize);
+		bonustexSpec->createBonusSpecular(bonusCheckerSize);
+		bonustexNormal->createBonusNormal(bonusCheckerSize);
+	}
+
+	void GLExample::renderBonusCube()
+	{
+		programForTexturedShape->bind();
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, bonustex->getTexHandle());
+		glUniform1i(programForTexturedShape->getUniformLocation("diffuseTex"), 0);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, bonustexSpec->getTexHandle());
+		glUniform1i(programForTexturedShape->getUniformLocation("specularTex"), 1);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, bonustexNormal->getTexHandle());
+		glUniform1i(programForTexturedShape->getUniformLocation("normalTex"), 2);
+
+		mvpMatrix = cam.getViewProjectionMatrix() * cube->getModelMatrix();
+		glUniformMatrix4fv(programForTexturedShape->getUniformLocation("modelMatrix"), 1, GL_FALSE, &cube->getModelMatrix()[0][0]);
+		glUniformMatrix4fv(programForTexturedShape->getUniformLocation("mvpMatrix"), 1, GL_FALSE, &mvpMatrix[0][0]);
+		cube->draw();
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		programForTexturedShape->unbind();
+	}
+
+	void GLExample::renderBonusTorus()
+	{
+		programForTexturedShape->bind();
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, bonustex->getTexHandle());
+		glUniform1i(programForTexturedShape->getUniformLocation("diffuseTex"), 0);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, bonustexSpec->getTexHandle());
+		glUniform1i(programForTexturedShape->getUniformLocation("specularTex"), 1);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, bonustexNormal->getTexHandle());
+		glUniform1i(programForTexturedShape->getUniformLocation("normalTex"), 2);
+
+		mvpMatrix = cam.getViewProjectionMatrix() * torus->getModelMatrix();
+		glUniformMatrix4fv(programForTexturedShape->getUniformLocation("modelMatrix"), 1, GL_FALSE, &torus->getModelMatrix()[0][0]);
+		glUniformMatrix4fv(programForTexturedShape->getUniformLocation("mvpMatrix"), 1, GL_FALSE, &mvpMatrix[0][0]);
+		torus->draw();
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		programForTexturedShape->unbind();
+
+		if(drawTorusNormals)
+			drawTorusNormalLines(bonustexNormal);
 	}
 
 	void GLExample::renderLightBox()
@@ -281,6 +397,9 @@ namespace cgCourse
         ImGui::RadioButton("Phong Shading", &renderMode, PHONG_SHADING);
         ImGui::RadioButton("Textured Shading", &renderMode, TEXTURED_SHADING);
         ImGui::RadioButton("Bonus Task", &renderMode, BONUS_SHADING);
+        ImGui::SliderInt("Bonus checker size", &bonusCheckerSize, 4, 80);
+        if(ImGui::IsItemDeactivatedAfterEdit())
+            recreateBonusTextures();
         ImGui::Separator();
         ImGui::Checkbox("Render Torus Normals", &drawTorusNormals);
         ImGui::End();
