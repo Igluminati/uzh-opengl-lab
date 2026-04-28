@@ -10,6 +10,7 @@ find_package(GLEW REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(glm REQUIRED)
+find_package(CImg CONFIG REQUIRED)
 
 add_compile_definitions(SHADER_DIR="${CMAKE_SOURCE_DIR}/shader")
 add_compile_definitions(RES_DIR="${CMAKE_SOURCE_DIR}/res")
@@ -25,5 +26,5 @@ FILE(GLOB_RECURSE sources
 )
 
 add_executable(${PROJECT_NAME} ${sources})
-target_link_libraries(${PROJECT_NAME} OpenGL::GL GLEW::GLEW glfw glm::glm imgui)
+target_link_libraries(${PROJECT_NAME} OpenGL::GL GLEW::GLEW glfw glm::glm imgui CImg::CImg)
 
