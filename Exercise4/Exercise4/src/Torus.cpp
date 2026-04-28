@@ -1,10 +1,56 @@
 #include "Torus.h"
 
-#include <iostream>
+#include <glm/glm.hpp>
+
 #include <cmath>
+#include <iostream>
+#include <vector>
 
 namespace cgCourse
 {
+	namespace
+	{
+		void accumulateTangentsFromFaces(const std::vector<glm::vec3> & positions,
+										  const std::vector<glm::vec2> & texCoords,
+										  const std::vector<glm::uvec3> & faces,
+										  std::vector<glm::vec3> & tangentsOut,
+										  const std::vector<glm::vec3> & normals)
+		{
+			tangentsOut.assign(positions.size(), glm::vec3(0.0f));
+			for (const auto & f : faces)
+			{
+				const glm::vec3 & p0 = positions[f.x];
+				const glm::vec3 & p1 = positions[f.y];
+				const glm::vec3 & p2 = positions[f.z];
+				const glm::vec2 & uv0 = texCoords[f.x];
+				const glm::vec2 & uv1 = texCoords[f.y];
+				const glm::vec2 & uv2 = texCoords[f.z];
+
+				const glm::vec3 edge1 = p1 - p0;
+				const glm::vec3 edge2 = p2 - p0;
+				const glm::vec2 duv1 = uv1 - uv0;
+				const glm::vec2 duv2 = uv2 - uv0;
+
+				const float denom = duv1.x * duv2.y - duv2.x * duv1.y;
+				if (std::abs(denom) < 1e-8f)
+					continue;
+				const float fdiv = 1.0f / denom;
+				const glm::vec3 t = fdiv * (duv2.y * edge1 - duv1.y * edge2);
+
+				tangentsOut[f.x] += t;
+				tangentsOut[f.y] += t;
+				tangentsOut[f.z] += t;
+			}
+			for (size_t i = 0; i < tangentsOut.size(); ++i)
+			{
+				const glm::vec3 & n = normals[i];
+				glm::vec3 t = tangentsOut[i];
+				t = glm::normalize(t - n * glm::dot(n, t));
+				tangentsOut[i] = t;
+			}
+		}
+	} // namespace
+
 	// a simple 2D circle
 	class Circle
 	{
@@ -148,6 +194,20 @@ namespace cgCourse
 
         //texCoords...
 		texCoords.resize(positions.size());
+		{
+			const int ringSeg = circleXZ.getSegments();
+			const int tubeSeg = static_cast<int>(circleXY.getVertices().size());
+			for (int j = 0; j < ringSeg; ++j)
+			{
+				for (int i = 0; i < tubeSeg; ++i)
+				{
+					const int idx = j * tubeSeg + i;
+					const float u = (static_cast<float>(j) / static_cast<float>(ringSeg)) * 4.0f;
+					const float v = static_cast<float>(i) / static_cast<float>(tubeSeg);
+					texCoords[static_cast<size_t>(idx)] = glm::vec2(u, v);
+				}
+			}
+		}
 
         // END TODO
 
@@ -157,7 +217,7 @@ namespace cgCourse
         // all adjacent faces so the tangents at these points will not necessarily follow one of the surface edges.
 
         // tangents...
-		tangents.resize(positions.size());
+		accumulateTangentsFromFaces(positions, texCoords, faces, tangents, normals);
 
         // END TODO
     }
