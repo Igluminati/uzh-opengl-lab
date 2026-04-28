@@ -45,6 +45,10 @@ namespace cgCourse
 		void renderTexturedTorus();
         void renderBasicCube();
         void renderBasicTorus();
+        void renderBonusCube();
+        void renderBonusTorus();
+        void recreateBonusTextures();
+        void drawTorusNormalLines(const std::shared_ptr<Texture> & normalTex);
 
         std::shared_ptr<ShaderProgram> programForTexturedShape;
 		std::shared_ptr<ShaderProgram> programForTexturedNormals;
@@ -85,6 +89,8 @@ namespace cgCourse
 		bool stopAnimation = false;
         float lightColor[3] = {1.0,1.0,1.0};
         int renderMode = GOURAUD_SHADING;
+
+        int bonusCheckerSize = 12;
     };
 }
 
